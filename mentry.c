@@ -3,7 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#define BUFFER_SIZE 1024 // todo: should this be the limit for everything?
+#define BUFFER_SIZE 1024 // todo: currently arbitrary; is there a better limit?
 #define LINES_PER_ENTRY 3
 
 // todo: source 2
@@ -28,14 +28,16 @@ void string_to_lower(char source[]) {
 }
 
 // Returns the next MEntry from fd.
+// house_number is 0 if no house number of found.
 // Returns null if EOF is reached.
 MEntry *me_get(FILE *fd) {
     // allocate space in memory for new MEntry
     MEntry *me = malloc(sizeof(MEntry));
+    me->house_number = 0;
     char *surname;
     int *house_number = malloc(sizeof(int));
     char *postcode;
-    char full_address[BUFFER_SIZE];
+    char *full_address = malloc(BUFFER_SIZE); // todo: probably not the best way of doing this
 
     // read file
     char buffer[BUFFER_SIZE];
@@ -50,21 +52,30 @@ MEntry *me_get(FILE *fd) {
             surname = malloc(strlen(buffer) * sizeof(char));
             sscanf(buffer, "%[^,]", surname); // todo: source 1
             string_to_lower(surname);
-            printf("%s\n", surname);
+            me->surname = surname;
+            strcpy(full_address, buffer);
         }
         // handle address line
         else if (i == 1) {
             if (sscanf(buffer, "%d", house_number) != 0) {
-                printf("%d\n", *house_number);
+                me->house_number = *house_number;
             }
+            free(house_number);
+            strcat(full_address, buffer);
         }
         // handle postcode line
         else if (i == 2) {
             postcode = malloc(strlen(buffer) * sizeof(char));
             delete_spaces(buffer, postcode);
             string_to_lower(postcode);
-            printf("%s\n", postcode);
+            me->postcode = postcode;
+            strcat(full_address, buffer);
         }
     }
+    me->full_address = full_address;
     return me;
 };
+
+void me_print(MEntry *me, FILE *fd) {
+    fprintf(fd, me->full_address);
+}
