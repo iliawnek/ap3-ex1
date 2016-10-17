@@ -28,17 +28,16 @@ void string_to_lower(char source[]) {
 }
 
 // Returns the next MEntry from fd.
-// house_number is 0 if no house number of found.
 // Returns null if EOF is reached.
 MEntry *me_get(FILE *fd) {
     // allocate space in memory for new MEntry
     MEntry *me = malloc(sizeof(MEntry));
-    me->house_number = 0;
     char *surname;
     int *house_number = malloc(sizeof(int));
     char *postcode;
     char *full_address = malloc(BUFFER_SIZE); // todo: probably not the best way of doing this
 
+    // todo: break up into individual functions?
     // read file
     char buffer[BUFFER_SIZE];
     for (int i = 0; i < LINES_PER_ENTRY; i++) {
@@ -59,6 +58,8 @@ MEntry *me_get(FILE *fd) {
         else if (i == 1) {
             if (sscanf(buffer, "%d", house_number) != 0) {
                 me->house_number = *house_number;
+            } else {
+                me->house_number = 0; // defaults to 0 if no house number is found
             }
             free(house_number);
             strcat(full_address, buffer);
