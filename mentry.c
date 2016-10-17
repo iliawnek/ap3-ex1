@@ -46,8 +46,9 @@ MEntry *me_get(FILE *fd) {
             string_to_lower(surname);
             printf("%s\n", surname);
         } else if (i == 1) {
-            sscanf(buffer, "%d", house_number);
-            printf("%d\n", *house_number);
+            if (sscanf(buffer, "%d", house_number) != 0) {
+                printf("%d\n", *house_number);
+            }
         } else if (i == 2) {
             postcode = malloc(strlen(buffer) * sizeof(char));
             delete_spaces(buffer, postcode);
