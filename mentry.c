@@ -6,20 +6,22 @@
 #define BUFFER_SIZE 1024 // todo: currently arbitrary; is there a better limit?
 #define LINES_PER_ENTRY 3
 
+// todo: should this function be in mentry.c?
 // todo: source 2
-// Copies only non-space characters from source to destination.
+// Copies alphanumeric characters from source to destination.
 // source is expected to end in \0.
 // destination is expected to be large enough to hold source.
-void delete_spaces(char source[], char destination[]) {
+void remove_nonalnum(char source[], char destination[]) {
     int d = 0;
     for (int s = 0; source[s] != '\0'; s++)
-        if (source[s] != ' ') {
+        if (isalnum(source[s])) {
             destination[d] = source[s];
             d++;
         }
     destination[d] = '\0';
 }
 
+// todo: should this function be in mentry.c?
 // Converts every char in source to lower.
 void string_to_lower(char source[]) {
     for (int s = 0; source[s] != '\0'; s++) {
@@ -70,7 +72,7 @@ MEntry *me_get(FILE *fd) {
         // handle postcode line
         else if (i == 2) {
             postcode = malloc(strlen(buffer) * sizeof(char));
-            delete_spaces(buffer, postcode);
+            remove_nonalnum(buffer, postcode);
             string_to_lower(postcode);
             mentry->postcode = postcode;
             strcat(full_address, buffer);
