@@ -1,9 +1,11 @@
 #include "mentry.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
 #define BUFFER_SIZE 1024 // todo: currently arbitrary; is there a better limit?
+#define HASH_STRING_SIZE 128 // todo: currently arbitrary; is there a better limit?
 #define LINES_PER_ENTRY 3
 
 // todo: should this function be in mentry.c?
@@ -81,6 +83,19 @@ MEntry *me_get(FILE *fd) {
     me->full_address = full_address;
     return me;
 };
+
+// todo: source 3
+// Computes hash of MEntry mod size.
+unsigned long me_hash(MEntry *me, unsigned long size) {
+    char s[HASH_STRING_SIZE]; // todo: should I be using BUFFER_SIZE here?
+    sprintf(s, "%s%s%d", me->surname, me->postcode, me->house_number);
+    char c;
+    unsigned hash = 0;
+    for (int i = 0; (c = s[i]) != '\0'; i++) {
+        hash = c + 31 * hash;
+    }
+    return hash % size;
+}
 
 // Prints MEntry in original formatting to fd.
 void me_print(MEntry *me, FILE *fd) {

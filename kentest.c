@@ -10,6 +10,9 @@ int main(int argc, char *argv[]) {
             printf("House number: %d\n", me->house_number);
         }
         printf("Postcode: %s\n", me->postcode);
+        printf("-----------\n");
+        printf("%lu\n", me_hash(me, 1000000));
+        printf("\n");
         printf("\n");
     };
 }
