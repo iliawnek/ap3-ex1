@@ -28,38 +28,41 @@ void string_to_lower(char source[]) {
 }
 
 // Returns the next MEntry from fd.
-// Returns null if EOF is reached.
+// Returns NULL if EOF is reached.
 MEntry *me_get(FILE *fd) {
     // allocate space in memory for new MEntry
-    MEntry *me = malloc(sizeof(MEntry));
-    char *surname;
+    MEntry *mentry = malloc(sizeof(MEntry));
+    char *surname = NULL;
     int *house_number = malloc(sizeof(int));
     char *postcode;
-    char *full_address = malloc(BUFFER_SIZE); // todo: probably not the best way of doing this
+    char *full_address = malloc(BUFFER_SIZE); // todo: is there a better way?
 
     // todo: break up into individual functions?
     // read file
     char buffer[BUFFER_SIZE];
     for (int i = 0; i < LINES_PER_ENTRY; i++) {
+        // stop and free space from memory if EOF is reached
         if (fgets(buffer, BUFFER_SIZE, fd) == NULL) {
-            // todo: deallocate current MEntry from memory
+            free(mentry);
+            free(house_number);
+            free(full_address);
+            if (surname != NULL) free(surname);
             return NULL;
         }
-
         // handle name line
         if (i == 0) {
             surname = malloc(strlen(buffer) * sizeof(char));
             sscanf(buffer, "%[^,]", surname); // todo: source 1
             string_to_lower(surname);
-            me->surname = surname;
+            mentry->surname = surname;
             strcpy(full_address, buffer);
         }
         // handle address line
         else if (i == 1) {
             if (sscanf(buffer, "%d", house_number) != 0) {
-                me->house_number = *house_number;
+                mentry->house_number = *house_number;
             } else {
-                me->house_number = 0; // defaults to 0 if no house number is found
+                mentry->house_number = 0; // defaults to 0 if no house number is found
             }
             free(house_number);
             strcat(full_address, buffer);
@@ -69,14 +72,15 @@ MEntry *me_get(FILE *fd) {
             postcode = malloc(strlen(buffer) * sizeof(char));
             delete_spaces(buffer, postcode);
             string_to_lower(postcode);
-            me->postcode = postcode;
+            mentry->postcode = postcode;
             strcat(full_address, buffer);
         }
     }
-    me->full_address = full_address;
-    return me;
+    mentry->full_address = full_address;
+    return mentry;
 };
 
+// Prints MEntry in original formatting to fd.
 void me_print(MEntry *me, FILE *fd) {
     fprintf(fd, me->full_address);
 }
