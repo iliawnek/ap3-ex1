@@ -90,7 +90,7 @@ unsigned long me_hash(MEntry *me, unsigned long size) {
     char s[HASH_STRING_SIZE]; // todo: should I be using BUFFER_SIZE here?
     sprintf(s, "%s%s%d", me->surname, me->postcode, me->house_number);
     char c;
-    unsigned hash = 0;
+    unsigned long hash = 0;
     for (int i = 0; (c = s[i]) != '\0'; i++) {
         hash = c + 31 * hash;
     }
