@@ -33,7 +33,7 @@ void string_to_lower(char source[]) {
 // Returns NULL if EOF is reached.
 MEntry *me_get(FILE *fd) {
     // allocate space in memory for new MEntry
-    MEntry *mentry = malloc(sizeof(MEntry));
+    MEntry *me = malloc(sizeof(MEntry));
     char *surname = NULL;
     int *house_number = malloc(sizeof(int));
     char *postcode;
@@ -45,7 +45,7 @@ MEntry *me_get(FILE *fd) {
     for (int i = 0; i < LINES_PER_ENTRY; i++) {
         // stop and free space from memory if EOF is reached
         if (fgets(buffer, BUFFER_SIZE, fd) == NULL) {
-            free(mentry);
+            free(me);
             free(house_number);
             free(full_address);
             if (surname != NULL) free(surname);
@@ -56,15 +56,15 @@ MEntry *me_get(FILE *fd) {
             surname = malloc(strlen(buffer) * sizeof(char));
             sscanf(buffer, "%[^,]", surname); // todo: source 1
             string_to_lower(surname);
-            mentry->surname = surname;
+            me->surname = surname;
             strcpy(full_address, buffer);
         }
         // handle address line
         else if (i == 1) {
             if (sscanf(buffer, "%d", house_number) != 0) {
-                mentry->house_number = *house_number;
+                me->house_number = *house_number;
             } else {
-                mentry->house_number = 0; // defaults to 0 if no house number is found
+                me->house_number = 0; // defaults to 0 if no house number is found
             }
             free(house_number);
             strcat(full_address, buffer);
@@ -74,12 +74,12 @@ MEntry *me_get(FILE *fd) {
             postcode = malloc(strlen(buffer) * sizeof(char));
             remove_nonalnum(buffer, postcode);
             string_to_lower(postcode);
-            mentry->postcode = postcode;
+            me->postcode = postcode;
             strcat(full_address, buffer);
         }
     }
-    mentry->full_address = full_address;
-    return mentry;
+    me->full_address = full_address;
+    return me;
 };
 
 // Prints MEntry in original formatting to fd.
