@@ -4,7 +4,7 @@
 #include <ctype.h>
 
 #define BUFFER_SIZE 1024 // todo: currently arbitrary; is there a better limit?
-#define HASH_STRING_SIZE 128 // todo: currently arbitrary; is there a better limit?
+#define ID_SIZE 128 // todo: currently arbitrary; is there a better limit?
 #define LINES_PER_ENTRY 3
 
 // todo: should this function be in mentry.c?
@@ -28,6 +28,11 @@ void string_to_lower(char source[]) {
     for (int s = 0; source[s] != '\0'; s++) {
         source[s] = (char) tolower(source[s]);
     }
+}
+
+// Sets destination string to surname + postcode + house_number of mailing list entry.
+void me_get_id(MEntry *me, char *destination) {
+    sprintf(destination, "%s%s%d", me->surname, me->postcode, me->house_number);
 }
 
 // Returns next mailing list entry from input fd.
@@ -86,11 +91,11 @@ MEntry *me_get(FILE *fd) {
 // todo: source 3
 // Computes hash of mailing list entry mod size.
 unsigned long me_hash(MEntry *me, unsigned long size) {
-    char s[HASH_STRING_SIZE]; // todo: should I be using HASH_STRING_SIZE here?
-    sprintf(s, "%s%s%d", me->surname, me->postcode, me->house_number);
+    char id[ID_SIZE]; // todo: should I be using ID_SIZE here?
+    me_get_id(me, id);
     char c;
     unsigned long hash = 0;
-    for (int i = 0; (c = s[i]) != '\0'; i++) {
+    for (int i = 0; (c = id[i]) != '\0'; i++) {
         hash = c + 31 * hash;
     }
     return hash % size;
@@ -106,7 +111,11 @@ void me_print(MEntry *me, FILE *fd) {
 // Returns 0 if me1 == me2.
 // Returns > 0 if me1 > me2.
 int me_compare(MEntry *me1, MEntry *me2) {
-    return (int) (me_hash(me1, 1000000) - me_hash(me2, 1000000)); // todo: 1000000 is arbitrary
+    char id1[ID_SIZE]; // todo: should I be using ID_SIZE here?
+    char id2[ID_SIZE]; // todo: should I be using ID_SIZE here?
+    me_get_id(me1, id1);
+    me_get_id(me2, id2);
+    return strcmp(id1, id2);
 }
 
 // Destroys mailing list entry and frees all memory allocated to it and its members.
