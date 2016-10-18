@@ -1,5 +1,4 @@
 #include "mentry.h"
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -31,7 +30,7 @@ void string_to_lower(char source[]) {
     }
 }
 
-// Returns the next me from fd.
+// Returns next mailing list entry from input fd.
 // Returns NULL if EOF is reached.
 MEntry *me_get(FILE *fd) {
     // allocate space in memory for new MEntry
@@ -85,7 +84,7 @@ MEntry *me_get(FILE *fd) {
 };
 
 // todo: source 3
-// Computes hash of me mod size.
+// Computes hash of mailing list entry mod size.
 unsigned long me_hash(MEntry *me, unsigned long size) {
     char s[HASH_STRING_SIZE]; // todo: should I be using HASH_STRING_SIZE here?
     sprintf(s, "%s%s%d", me->surname, me->postcode, me->house_number);
@@ -97,7 +96,7 @@ unsigned long me_hash(MEntry *me, unsigned long size) {
     return hash % size;
 }
 
-// Prints me in original formatting to fd.
+// Prints mailing list entry in original formatting to output fd.
 void me_print(MEntry *me, FILE *fd) {
     fprintf(fd, me->full_address);
 }
@@ -110,7 +109,7 @@ int me_compare(MEntry *me1, MEntry *me2) {
     return (int) (me_hash(me1, 1000000) - me_hash(me2, 1000000)); // todo: 1000000 is arbitrary
 }
 
-// Destroys me and frees all memory allocated to it and its members.
+// Destroys mailing list entry and frees all memory allocated to it and its members.
 void me_destroy(MEntry *me) {
     // todo: am I forgetting to free anything else here?
     free(me->surname);
