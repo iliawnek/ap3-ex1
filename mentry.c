@@ -101,3 +101,11 @@ unsigned long me_hash(MEntry *me, unsigned long size) {
 void me_print(MEntry *me, FILE *fd) {
     fprintf(fd, me->full_address);
 }
+
+// Compares two MEntry variables.
+// Returns < 0 if me1 < me2.
+// Returns 0 if me1 == me2.
+// Returns > 0 if me1 > me2.
+int me_compare(MEntry *me1, MEntry *me2) {
+    return (int) (me_hash(me1, 1000000) - me_hash(me2, 1000000)); // todo: 1000000 is arbitrary
+}
