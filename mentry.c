@@ -31,7 +31,7 @@ void string_to_lower(char source[]) {
     }
 }
 
-// Returns the next MEntry from fd.
+// Returns the next me from fd.
 // Returns NULL if EOF is reached.
 MEntry *me_get(FILE *fd) {
     // allocate space in memory for new MEntry
@@ -85,9 +85,9 @@ MEntry *me_get(FILE *fd) {
 };
 
 // todo: source 3
-// Computes hash of MEntry mod size.
+// Computes hash of me mod size.
 unsigned long me_hash(MEntry *me, unsigned long size) {
-    char s[HASH_STRING_SIZE]; // todo: should I be using BUFFER_SIZE here?
+    char s[HASH_STRING_SIZE]; // todo: should I be using HASH_STRING_SIZE here?
     sprintf(s, "%s%s%d", me->surname, me->postcode, me->house_number);
     char c;
     unsigned long hash = 0;
@@ -97,15 +97,24 @@ unsigned long me_hash(MEntry *me, unsigned long size) {
     return hash % size;
 }
 
-// Prints MEntry in original formatting to fd.
+// Prints me in original formatting to fd.
 void me_print(MEntry *me, FILE *fd) {
     fprintf(fd, me->full_address);
 }
 
-// Compares two MEntry variables.
+// Compares me1 and me2.
 // Returns < 0 if me1 < me2.
 // Returns 0 if me1 == me2.
 // Returns > 0 if me1 > me2.
 int me_compare(MEntry *me1, MEntry *me2) {
     return (int) (me_hash(me1, 1000000) - me_hash(me2, 1000000)); // todo: 1000000 is arbitrary
+}
+
+// Destroys me and frees all memory allocated to it and its members.
+void me_destroy(MEntry *me) {
+    // todo: am I forgetting to free anything else here?
+    free(me->surname);
+    free(me->postcode);
+    free(me->full_address);
+    free(me);
 }
