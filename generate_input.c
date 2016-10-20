@@ -5,11 +5,11 @@ char *surnames[] = {"Watts", "Smith", "Jones", "Taylor", "Williams", "Brown", "D
 char letters[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
 
 char get_random_letter(int unique_letters) {
-    return letters[rand() % unique_letters];
+    return letters[rand() % (unique_letters - 1)];
 }
 
 int get_random_number(int unique_numbers) {
-    return 1 + rand() % unique_numbers + 1;
+    return 1 + rand() % unique_numbers;
 }
 
 char *get_random_postcode(int unique_letters, int unique_numbers) {
@@ -42,7 +42,9 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < atoi(argv[1]); i++) {
         printf("%s, %s\n", get_random_surname(surnames, atoi(argv[2])), get_random_surname(surnames, atoi(argv[2])));
         printf("%d\n", get_random_number(atoi(argv[3])));
-        printf("%s\n", get_random_postcode(atoi(argv[4]), atoi(argv[5])));
+        char *postcode = get_random_postcode(atoi(argv[4]), atoi(argv[5]));
+        printf("%s\n", postcode);
+        free(postcode);
 //        printf("\n");
     }
 }
