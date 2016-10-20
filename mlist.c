@@ -26,11 +26,21 @@ int ml_verbose = 0;
 
 // Creates new mailing list.
 MList *ml_create(void) {
-    if (ml_verbose) fprintf(stderr, "ml_create()\n");
+    if (ml_verbose) fprintf(stderr, "Create new mailing list.");
+
     MList *ml = malloc(sizeof(MList));
-    if (ml == NULL) return NULL; // no space in memory for ew mailing list
-    ml->hash_table = calloc(hash_table_size, sizeof(Bucket));
-    if (ml->hash_table == NULL) return NULL; // no space in memory for new mailing list
+    if (ml == NULL) {
+        if (ml_verbose) fprintf(stderr, " Error: no space in memory for new mailing list.\n");
+        return NULL;
+    }
+
+    ml->hash_table = calloc(hash_table_size, sizeof(Bucket *));
+    if (ml->hash_table == NULL) {
+        if (ml_verbose) fprintf(stderr, " Error: no space in memory for new mailing list.\n");
+        return NULL;
+    }
+
+    if (ml_verbose) fprintf(stderr, "\n");
     return ml;
 }
 
@@ -39,27 +49,35 @@ MList *ml_create(void) {
 // Returns 1 if entry is duplicate.
 // Returns 0 if error (malloc).
 int ml_add(MList **ml, MEntry *me) {
-    if (ml_verbose) fprintf(stderr, "ml_add()\n");
+    if (ml_verbose) fprintf(stderr, "Add entry to hash table.");
 
     Bucket **hash_table = (*ml)->hash_table;
     unsigned int index = me_hash(me, hash_table_size);
+    if (ml_verbose) fprintf(stderr, " Hash is %d.", index);
     Bucket *bucket = hash_table[index];
 
     // no bucket yet
     if (bucket == NULL) {
+        if (ml_verbose) fprintf(stderr, " Bucket doesn't exist yet, creating a new one.\n");
+
         bucket = malloc(sizeof(Bucket));
-        if (bucket == NULL) return 0; // no space in memory for new bucket
         BucketItem *bucket_item = malloc(sizeof(BucketItem));
-        if (bucket_item == NULL) return 0;  // no space in memory for new bucket
+        if (bucket == NULL || bucket_item == NULL) {
+            if (ml_verbose) fprintf(stderr, " Error: no space in memory for new bucket.\n");
+            return 0;
+        }
+
         bucket_item->me = me;
         bucket_item->next = NULL;
         bucket->first = bucket_item;
         bucket->size = 1;
+        hash_table[index] = bucket;
         return 1;
     }
 
     // bucket is full
     if (bucket->size == BUCKET_CAPACITY) {
+        if (ml_verbose) fprintf(stderr, " Bucket full.\n");
         expand_hash_table(ml);
         return ml_add(ml, me); // try adding entry to expanded hash table
     }
@@ -67,7 +85,10 @@ int ml_add(MList **ml, MEntry *me) {
     // check for duplicate
     BucketItem *cursor = bucket->first;
     do {
-        if (me_compare(cursor->me, me) == 0) return 1;
+        if (me_compare(cursor->me, me) == 0) {
+            if (ml_verbose) fprintf(stderr, " Duplicate entry found.\n");
+            return 1;
+        }
     } while ((cursor = cursor->next) != NULL);
 
     // add entry to bucket
@@ -76,6 +97,7 @@ int ml_add(MList **ml, MEntry *me) {
     bucket_item->next = bucket->first;
     bucket->first = bucket_item;
     bucket->size++; // todo: make sure this line works
+    if (ml_verbose) fprintf(stderr, "\n");
     return 1;
 }
 
@@ -83,24 +105,31 @@ int ml_add(MList **ml, MEntry *me) {
 // Returns matching entry if found.
 // Returns NULL if not found.
 MEntry *ml_lookup(MList *ml, MEntry *me) {
-    if (ml_verbose) fprintf(stderr, "ml_lookup()\n");
+    if (ml_verbose) fprintf(stderr, "Looking for entry in hash table.");
 
     unsigned int index = me_hash(me, hash_table_size);
     Bucket **hash_table = ml->hash_table;
     Bucket *bucket = hash_table[index];
 
-    if (bucket == NULL) return NULL; // bucket doesn't exist, therefore no entry
+    if (bucket == NULL) {
+        if (ml_verbose) fprintf(stderr, " Bucket doesn't exist, entry not found.\n");
+        return NULL;
+    }
 
     BucketItem *cursor = bucket->first;
     do {
-        if (me_compare(cursor->me, me) == 0) return me;
+        if (me_compare(cursor->me, me) == 0) {
+            if (ml_verbose) fprintf(stderr, " Entry found.\n");
+            return cursor->me;
+        }
     } while ((cursor = cursor->next) != NULL);
+    if (ml_verbose) fprintf(stderr, " Bucket exists, but entry not found.\n");
     return NULL; // bucket exists, but entry not found
 }
 
 // Destroys mailing list.
 void ml_destroy(MList *ml) {
-    if (ml_verbose) fprintf(stderr, "ml_destroy()\n");
+    if (ml_verbose) fprintf(stderr, "Destroy mailing list.\n");
 
     Bucket **hash_table = ml->hash_table;
     Bucket *bucket;
@@ -122,7 +151,7 @@ void ml_destroy(MList *ml) {
 }
 
 void expand_hash_table(MList **ml) {
-    if (ml_verbose) fprintf(stderr, "expand_hash_table()\n");
+    if (ml_verbose) fprintf(stderr, "Expand hash table.\n");
 
     hash_table_size *= 2;
     MList *new_ml = ml_create();
