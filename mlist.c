@@ -121,7 +121,7 @@ MEntry *ml_lookup(MList *ml, MEntry *me) {
 
 // Destroys mailing list.
 void ml_destroy(MList *ml) {
-    if (ml_verbose) fprintf(stderr, "Destroy mailing list.\n");
+    if (ml_verbose) fprintf(stderr, "Destroying mailing list.\n");
 
     Bucket **hash_table = ml->hash_table;
     Bucket *bucket;
@@ -145,7 +145,7 @@ void ml_destroy(MList *ml) {
 
 void expand_hash_table(MList **ml) {
     hash_table_size *= 2;
-    if (ml_verbose) fprintf(stderr, "Expand hash table to %d buckets.\n", hash_table_size);
+    if (ml_verbose) fprintf(stderr, "Expanding hash table to %d buckets.\n", hash_table_size);
 
     MList *new_ml = ml_create();
     Bucket **hash_table = (*ml)->hash_table;
