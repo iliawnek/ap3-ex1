@@ -1,3 +1,11 @@
+// Name: Ken Li
+// Matriculation number: 2131620
+// Assignment: APH Exercise 1
+
+// This is my own work as defined in the Academics Ethics agreement I have signed,
+// with the exception of me_hash(), which was adapted from the book
+// The C Programming Language (2nd edition), page 144.
+
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>

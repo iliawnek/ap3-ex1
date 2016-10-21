@@ -1,6 +1,6 @@
 // Name: Ken Li
 // Matriculation number: 2131620
-// Assignment: AP3 exercise 1
+// Assignment: APH Exercise 1
 
 // This is my own work as defined in the Academics Ethics agreement I have signed.
 
