@@ -1,13 +1,13 @@
-#include "mentry.h"
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "mentry.h"
 
-#define BUFFER_SIZE 1024 // todo: currently arbitrary; is there a better limit?
-#define ID_SIZE 128 // todo: currently arbitrary; is there a better limit?
-#define LINES_PER_ENTRY 3
+#define BUFFER_SIZE 1024 // limit for buffer string when reading from file in me_get()
+#define ADDRESS_LIMIT 1024 // limit for number of chars in each entry's full_address
+#define ID_SIZE 128 // size of temporary id string for individual MEntry
+#define LINES_PER_ENTRY 3 // lines of input file per mailing list entry
 
-// todo: should this function be in mentry.c?
 // todo: source 2
 // Copies alphanumeric characters from source to destination.
 // source is expected to end in \0.
@@ -22,7 +22,6 @@ void remove_nonalnum(char source[], char destination[]) {
     destination[d] = '\0';
 }
 
-// todo: should this function be in mentry.c?
 // Converts every char in source to lower.
 void string_to_lower(char source[]) {
     for (int s = 0; source[s] != '\0'; s++) {
@@ -31,6 +30,7 @@ void string_to_lower(char source[]) {
 }
 
 // Sets destination string to surname + postcode + house_number of mailing list entry.
+// Used for hashing and comparison of mailing list entries.
 void me_get_id(MEntry *me, char *destination) {
     sprintf(destination, "%s%s%d", me->surname, me->postcode, me->house_number);
 }
@@ -43,9 +43,8 @@ MEntry *me_get(FILE *fd) {
     char *surname = NULL;
     int *house_number = malloc(sizeof(int));
     char *postcode;
-    char *full_address = malloc(BUFFER_SIZE); // todo: is there a better way?
+    char *full_address = malloc(ADDRESS_LIMIT);
 
-    // todo: break up into individual functions?
     // read file
     char buffer[BUFFER_SIZE];
     for (int i = 0; i < LINES_PER_ENTRY; i++) {
@@ -91,7 +90,7 @@ MEntry *me_get(FILE *fd) {
 // todo: source 3
 // Computes hash of mailing list entry mod size.
 unsigned long me_hash(MEntry *me, unsigned long size) {
-    char id[ID_SIZE]; // todo: should I be using ID_SIZE here?
+    char id[ID_SIZE];
     me_get_id(me, id);
     char c;
     unsigned long hash = 0;
