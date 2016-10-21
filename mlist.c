@@ -1,3 +1,9 @@
+// Name: Ken Li
+// Matriculation number: 2131620
+// Assignment: AP3 exercise 1
+
+// This is my own work as defined in the Academics Ethics agreement I have signed.
+
 #include "mlist.h"
 #include <stdlib.h>
 
@@ -139,7 +145,8 @@ void ml_destroy(MList *ml) {
     Bucket *bucket;
     BucketItem *bucket_item;
     BucketItem *next_bucket_item;
-    for (int i = 0; i < hash_table_size; i++) {
+    int i;
+    for (i = 0; i < hash_table_size; i++) {
         bucket = hash_table[i];
         if (bucket != NULL) {
             bucket_item = bucket->first;
@@ -167,7 +174,8 @@ void expand_hash_table(MList **ml, int factor) {
     Bucket *bucket;
     BucketItem *bucket_item;
     BucketItem *next_bucket_item;
-    for (int i = 0; i < hash_table_size / factor; i++) {
+    int i;
+    for (i = 0; i < hash_table_size / factor; i++) {
         bucket = hash_table[i];
         if (bucket != NULL) {
             bucket_item = bucket->first;

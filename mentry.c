@@ -14,7 +14,8 @@
 // destination is expected to be large enough to hold source.
 void remove_nonalnum(char source[], char destination[]) {
     int d = 0;
-    for (int s = 0; source[s] != '\0'; s++)
+    int s;
+    for (s = 0; source[s] != '\0'; s++)
         if (isalnum(source[s])) {
             destination[d] = source[s];
             d++;
@@ -24,7 +25,8 @@ void remove_nonalnum(char source[], char destination[]) {
 
 // Converts every char in source to lower.
 void string_to_lower(char source[]) {
-    for (int s = 0; source[s] != '\0'; s++) {
+    int s;
+    for (s = 0; source[s] != '\0'; s++) {
         source[s] = (char) tolower(source[s]);
     }
 }
@@ -47,7 +49,8 @@ MEntry *me_get(FILE *fd) {
 
     // read file
     char buffer[BUFFER_SIZE];
-    for (int i = 0; i < LINES_PER_ENTRY; i++) {
+    int i;
+    for (i = 0; i < LINES_PER_ENTRY; i++) {
         // stop and free space from memory if EOF is reached
         if (fgets(buffer, BUFFER_SIZE, fd) == NULL) {
             free(me);
@@ -94,7 +97,8 @@ unsigned long me_hash(MEntry *me, unsigned long size) {
     me_get_id(me, id);
     char c;
     unsigned long hash = 0;
-    for (int i = 0; (c = id[i]) != '\0'; i++) {
+    int i;
+    for (i = 0; (c = id[i]) != '\0'; i++) {
         hash = c + 31 * hash;
     }
     return hash % size;
